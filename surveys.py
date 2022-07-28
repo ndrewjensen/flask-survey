@@ -16,6 +16,8 @@ class Question:
         self.choices = choices
         self.allow_text = allow_text
 
+    def __repr__(self):
+        return f"Question is {self.question} with choices {self.choices}"
 
 class Survey:
     """Questionnaire."""
