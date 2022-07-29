@@ -31,12 +31,14 @@ def redirect_to_first_question():
 @app.get("/question/<int:question_idx>")
 def display_question(question_idx):
     
-    responses = session["responses"]
+    if len(session['responses']) == len(survey.questions):
+        flash("""You may only submit the survey once. Thanks!""")
+        return redirect('/completion')
 
-    if question_idx != len(responses):
+    if question_idx != len(session["responses"]):
         flash("""Hi there!! Please answer all questions in order. 
             Stop tinkering pls and thx""")
-        return redirect(f"/question/{len(responses)}")
+        return redirect(f"/question/{len(session['responses'])}")
 
     question = survey.questions[question_idx]
 
