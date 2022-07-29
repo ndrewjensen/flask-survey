@@ -4,18 +4,20 @@ from flask_debugtoolbar import DebugToolbarExtension
 from surveys import satisfaction_survey as survey
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "never-tell!"
+app.config['SECRET_KEY'] = "hoeidnpg5673cgidaencgikdo753489tuhik"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
-responses = []
+
+
 question_idx = 0
 
 @app.get('/')
 def render_initial_page():
     """Displays the survey start page"""
-    
+    session["responses"] = []
+
     return render_template(
         '/survey_start.html',
         survey = survey)
@@ -29,6 +31,13 @@ def redirect_to_first_question():
 @app.get("/question/<int:question_idx>")
 def display_question(question_idx):
     
+    responses = session["responses"]
+
+    if question_idx != len(responses):
+        flash("""Hi there!! Please answer all questions in order. 
+            Stop tinkering pls and thx""")
+        return redirect(f"/question/{len(responses)}")
+
     question = survey.questions[question_idx]
 
     return render_template(
@@ -43,7 +52,11 @@ def take_answer_and_redirect():
     if the survey is finished"""
     
     answer = request.form["answer"]
+    
+    responses = session["responses"]
     responses.append(answer)
+    session['responses'] = responses
+    
     question_idx = len(responses)
 
     
